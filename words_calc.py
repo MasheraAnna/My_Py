@@ -23,24 +23,25 @@ for index, string in enumerate(hundreds):
 	dic100s [string] = ((index+1)*100)
 
 scales = {"тысяча":"1000", "миллион":"1000000", "миллиард":"1000000000", "трилион":"1000000000000"}
-actions = {"умножь":"*", "умножьте":"*","умножить":"*", "разделить":"/", "раздели":"/", "разделите":"/", 
-"сложи":"+", "сложите":"+", "плюс":"+", "минус":"-", "вычти":"-", "вычесть":"-"}
 
-actionsShort = {"умножь":"*", "раздели":"/", "сложи":"+"}
+actions1 = {"плюс":"+", "минус":"-", "умножь":"*", "умножьте":"*", "умножить":"*", "сложи":"+", "сложить":"+", "сложите":"+"}
+actions2 = {"разделить":"/", "раздели":"/", "разделите":"/"}
+actions3 = {"вычти":"-", "вычесть":"-", "вычтите":"-",}
 
 allActions = {}
-allActions.update(actions)
-allActions.update(actionsShort)
+allActions.update(actions1)
+allActions.update(actions2)
+allActions.update(actions3)
 
+actionsPreps = {"на":"", "из":"", "и":"", "с":""}
 
-actionsProps = {" на ":"", " из ":"", " и ":"", " с ":""}
 
 addForms = {"однa":"1", "две":"2", "тысяч":"1000", "тысячи":"1000", "тысячу":"1000", "миллиона":"1000000", "миллионов":"1000000", 
 "миллиарда":"1000000000", "миллиардов":"1000000000", "трилиона":"1000000000000", "трилионов":"1000000000000"}
 
-actionsPlusProps = {}
-actionsPlusProps.update(actions)
-actionsPlusProps.update(actionsProps)
+actionsPlusPreps = {}
+actionsPlusPreps.update(allActions)
+actionsPlusPreps.update(actionsPreps)
 
 
 allNumbers = {}
@@ -50,30 +51,11 @@ allNumbers.update(dic20to90)
 allNumbers.update(dic100s)
 allNumbers.update(scales)
 
+allLists = {}
+allLists.update(allNumbers)
+allLists.update(allActions)
+allLists.update(actionsPreps)
 
-def cut_all_before (inp, formsList):
-	positions = {}
-	for wordForm in formsList :
-		try:
-			position = inp.index(wordForm)
-			positions[position] = wordForm
-		except ValueError:
-			continue
-				
-	cutBefore = (min(positions, key=int))
-	restOfInp = inp[cutBefore: ]
-	return restOfInp
-
-
-def cut_all_after (inp, formsList):
-	positions = {}
-	for wordForm in formsList :
-		position = inp.rfind(wordForm)
-		positions[position] = wordForm	
-	maxKey = (max(positions, key=int))
-	cutAfter = maxKey + len(positions[maxKey]) 
-	restOfInp = inp[:cutAfter]
-	return restOfInp
 
 def find_action (inp, allActionsList):
 	actionInText = False
@@ -89,8 +71,29 @@ while len(inp) != 0 :
 	inp = input()
 	# удалим все специальные символы
 	inp = re.sub('[^A-Za-zА-Яа-я ]+', '', inp)
-	# найдем первое числительное в тексте, обрежем все, что идет до него
+	
+	# разобьем текст на список через пробел и удалим все лишние слова
+	inp = inp.split(" ")
+	for value in inp :
+		if value in allLists :
+			print(value) 
 
+	for value in inp :
+		if value in actions1:
+			print(actions1[value])
+			# если найдешь предлог - не парься, не ищи предлог 
+		elif value in actions2:
+			print(actions2[value])
+			# если найдешь предлог - то, что идет после предлога и до действия или до конца - что быстрее наступит - это делитель
+			# если не найдешь предлог - ошибка
+		elif value in actions3:
+			print(actions3[value])
+			# если найдешь предлог - то, что после предлога и до действия либо до конца (смотря что быстрее) - уменьшаемое
+			# если не найдешь предлог - ошибка
+
+
+
+	"""
 	inp2 = cut_all_before(inp, allNumbers)
 	findAction = find_action (inp2, allActions)
 	if 	findAction == True :
@@ -109,7 +112,7 @@ while len(inp) != 0 :
 	print (findAction)
 	print (inp)
 
-	"""
+	
 	максимальное число разрядов =  999 999 999 999 999 - триллионов
 	разрежем получившееся выражение на 2 части:
 	обработать все действия и слово на - заменить их на *
