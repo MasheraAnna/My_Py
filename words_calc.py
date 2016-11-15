@@ -24,6 +24,17 @@ for index, string in enumerate(hundreds):
 
 scales = {"тысяча":"1000", "миллион":"1000000", "миллиард":"1000000000", "трилион":"1000000000000"}
 
+thousands = {"тысяча":"1000", "тысяч":"1000", "тысячи":"1000", "тысячу":"1000"}
+millions = {"миллион":"1000000", "миллиона":"1000000", "миллионов":"1000000"}
+billions = {"миллиард":"1000000000", "миллиарда":"1000000000", "миллиардов":"1000000000"}
+trillions = {"триллион":"1000000000000",  "триллиона":"1000000000000", "триллионов":"1000000000000"}
+
+allNumbersLists = []
+allNumbersLists.insert(0, thousands)
+allNumbersLists.insert(1, millions)
+allNumbersLists.insert(2, billions)
+allNumbersLists.insert(3, trillions)
+
 actions1 = {"плюс":"+", "минус":"-", "умножь":"*", "умножьте":"*", "умножить":"*", "сложи":"+", "сложить":"+", "сложите":"+"}
 actions2 = {"разделить":"/", "раздели":"/", "разделите":"/"}
 actions3 = {"вычти":"-", "вычесть":"-", "вычтите":"-",}
@@ -50,6 +61,9 @@ allNumbers.update(dic10to19)
 allNumbers.update(dic20to90)
 allNumbers.update(dic100s)
 allNumbers.update(scales)
+allNumbers.update(thousands)
+allNumbers.update(billions)
+allNumbers.update(trillions)
 
 allLists = {}
 allLists.update(allNumbers)
@@ -57,152 +71,144 @@ allLists.update(allActions)
 allLists.update(actionsPreps)
 
 
-def find_action (inp, allActionsList):
-	actionInText = False
-	for action, sign in allActions.items() :
-		if action in inp:
-			actionInText = True
-	return actionInText
+def split_on(what, delimiter = None):
+    splitted = [[]]
+    for item in what:
+        if item == delimiter:
+            splitted.append([])
+        else:
+            splitted[-1].append(item)
+    return splitted
+
+"""
+def transform_words_to_numbers(classesList, number):
+		currentClass = classesList.pop()
+		for item in classesList:
+			if item in numberList:
+				numsplit = split_on(num1, item)
+				num1thousands = numsplit[0]
+				num1units = numsplit[1]
+				for num in num1units:
+					result = result + allNumbers[num]*1
+"""
+inp = input()
+number = inp.split()
+print(number)
+"""
+print(transform_words_to_numbers(allNumbersLists, number))
+"""
+
+def factorial(n):
+	if n == 0:
+	    return 1
+	else:
+	    return n * factorial(n - 1)
 
 
+"""
 inp = 'start!'
 
 while len(inp) != 0 :
 	inp = input()
 	# удалим все специальные символы
 	inp = re.sub('[^A-Za-zА-Яа-я ]+', '', inp)
-	
+			
 	# разобьем текст на список через пробел и удалим все лишние слова
-	inp = inp.split(" ")
-	for value in inp :
+	inpList = inp.split(" ")
+	cleanInputList = []
+	for value in inpList :
 		if value in allLists :
-			print(value) 
+			cleanInputList.append(value) 
 
-	for value in inp :
-		if value in actions1:
-			print(actions1[value])
-			# если найдешь предлог - не парься, не ищи предлог 
-		elif value in actions2:
-			print(actions2[value])
-			# если найдешь предлог - то, что идет после предлога и до действия или до конца - что быстрее наступит - это делитель
-			# если не найдешь предлог - ошибка
-		elif value in actions3:
-			print(actions3[value])
-			# если найдешь предлог - то, что после предлога и до действия либо до конца (смотря что быстрее) - уменьшаемое
-			# если не найдешь предлог - ошибка
-
-
-
-	"""
-	inp2 = cut_all_before(inp, allNumbers)
-	findAction = find_action (inp2, allActions)
-	if 	findAction == True :
-		inp = inp2
-	else :
-		inp2 = cut_all_before(inp, actions)
-		findAction = find_action (inp2, allActions)	
-		if findAction == True :
-			inp = inp2
-		else :
-			inp3 = cut_all_before(inp2, actionsShort)
-			findAction = find_action (inp3, allActions)
-			if findAction == True :
-				inp = inp3
-
-	print (findAction)
-	print (inp)
-
-	
-	максимальное число разрядов =  999 999 999 999 999 - триллионов
-	разрежем получившееся выражение на 2 части:
-	обработать все действия и слово на - заменить их на *
-	разбить по этой * в массив
-	
-	actionsList = []
-	for action, sign in actionsPlusProps.items() :	
-		while action in inp :
-			actionsList.append(sign)
-			inp = inp.replace(action, "&")
-
-	for action, sign in actionsShort.items() :	
-		while action in inp :
-			actionsList.append(sign)
-			inp = inp.replace(action, "&")
-		
-	while '' in actionsList:
-		actionsList.remove('')
-
-	if len(actionsList) == 0 :
+	# выпишем все действия в отдельный массив
+	operations = []
+	for index, sign in enumerate(cleanInputList): 
+		if sign in allActions:
+			operations.append(allActions[sign])
+	# если нет действий - вывести ошибку
+	if len(operations) == 0 :
 		print ("Не хватает действия!")
 		continue
-	elif len(actionsList) > 1 :
+	if len(operations) > 2 :
 		print ("Слишком много действий!")
 		continue
 
-	print (inp)
-	inp = inp.split("&")
-
-	while '' in inp:
-		inp.remove('')
+	# выпишем два числительных :	
+	numbersList = []
+	for item in cleanInputList :
+		if item in allNumbers :
+			numbersList.append(item) 
+		else :
+			numbersList.append("&")
 	
-	# обрезать пробелы
-	num1 = inp.pop()
+	twoDigits = split_on(numbersList, "&")
 	
-	num2 = inp.pop()
-	
+	# удалим пустые
+	for item in twoDigits:
+		if not item:
+			twoDigits.remove(item)
 
-	print (num1) 
-	print (num2)
-	
-	# собственно вычисляем:
 
-	a = str(allLists[num2]) + str(actionsList[0]) + str(allLists[num1])
-	print (a)
-	answer = eval(a)
-	print (answer)
-
-	
-	
-
-	# если в числительном было одно слово:
-	if len(num1) == 1 :
-		if num1 in allLists:
-			toCalc1 = num1
-			print(toCalc1)
-		else:
-			print("Какая-то ошибка в написании! Проверь, пожалуйста :)")
-			inp = input()
-			exp = inp.split(' ')
-			continue
-
-	elif sign in actions :
-		print (actions[sign])
-	elif len(num2) == 1 :
-		if num2 in allLists:
-			toCalc1 = num2
-			print(toCalc2)
-		else:
-			print("Какая-то ошибка в написании! Проверь, пожалуйста :)")
-			inp = input()
-			exp = inp.split(' ')
-			continue
-	else :
-		print ("Какая-то ошибка в написании! Проверь, пожалуйста :)")
-		inp = input()
-		exp = inp.split(' ')
+	# проверим: должно быть два числительных, если больше или меньше - ошибка
+	if len(twoDigits) !=2 :
+		print ("Должно быть два числа, пожалуйста, и введи заново:")
 		continue
 
-# посмотрим на слудующее числительное:
-	# если это scales - то будем умножать следующие числительные на размер этого скейла
-	# если это десятки - добавим + размер этого десятка
-	# если это сотни - добавим + размер этой сотни
 
-# посмотрим на слудующее числительное:
-	# если это scales - то будем умножать следующие числительные на размер этого скейла
-	# если это десятки - ошибка
-	# если это сотни - добавим + размер этой сотни
+	# проверь, не нужно ли поменять местами number1 и number2:
+	
+	st = twoDigits[0]
+	firstDigit = st[0]
+	firstDigitParts = split_on(cleanInputList, firstDigit)
+
+	for prep in actionsPreps :
+		if prep in firstDigitParts[0] and "/" in operations:
+			twoDigits.reverse()
+		if prep in firstDigitParts[1] and "-" in operations:
+			twoDigits.reverse()
+
+	print(twoDigits)
+
+	# преврати number1 и number2 в числа
+	num2 = twoDigits.pop()
+	num1 = twoDigits.pop()
+	result = 0
+
+	# все списки с названиями разрядов записать в список, который передавать в функцию
+	# потом из этого списка делать pop
+	# тестировать вынутый список
+	# кроме этого списка в функцию передавать еще само числительное
+	# глубину рекурсии определять автоматически, т.е. повторять функцию, пока в массиве есть разряды
+
+	
 
 
+	
 
-# определим, к каком из листов оно относится
-"""
+	
+		разбиваем массив по словам "тысяч", "миллионов", "миллиардов", "триллионов", если таки слова встречаются в этом массиве
+		
+
+	# если в числительном было одно слово:
+		
+	if len(num1) == 1 :
+		if num1[0] in allNumbers:
+			toCalc1 = num1[0]
+		else:
+			print("Какая-то ошибка в написании! Проверь, пожалуйста :)")
+			continue
+	
+	if len(num2) == 1 :
+		if num2[0] in allNumbers:
+			toCalc2 = num2[0]
+		else:
+			print("Какая-то ошибка в написании! Проверь, пожалуйста :)")
+			continue
+	
+
+	# вычислим
+	a = str(allNumbers[toCalc1]) + " ".join(operations) + str(allNumbers[toCalc2])
+	print (a)
+	answer = eval(a)
+	print ("Ответ:", answer)
+	"""	
