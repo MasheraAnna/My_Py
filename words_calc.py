@@ -1,10 +1,11 @@
 import re
 
-
 from1to9 = ["один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"]
 dic1to9 = {}
 for index, string in enumerate(from1to9):
 	dic1to9 [string] = (index+1)
+dic1to9.update ({"одна":1, "две":2})
+
 
 from10to19 = [ "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
 "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"]
@@ -17,7 +18,7 @@ dic20to90 = {}
 for index, string in enumerate(from20to90):
 	dic20to90 [string] = ((index+2)*10)
 
-hundreds = ["сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятсот"] 
+hundreds = ["сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"] 
 dic100s = {}
 for index, string in enumerate(hundreds):
 	dic100s [string] = ((index+1)*100)
@@ -30,10 +31,11 @@ billions = {"миллиард":"1000000000", "миллиарда":"1000000000", 
 trillions = {"триллион":"1000000000000",  "триллиона":"1000000000000", "триллионов":"1000000000000"}
 
 allNumbersLists = []
-allNumbersLists.insert(0, thousands)
-allNumbersLists.insert(1, millions)
-allNumbersLists.insert(2, billions)
-allNumbersLists.insert(3, trillions)
+allNumbersLists.insert(1000, thousands)
+allNumbersLists.insert(1000000, millions)
+allNumbersLists.insert(1000000000, billions)
+allNumbersLists.insert(1000000000000, trillions)
+# отсортировать по убыванию
 
 actions1 = {"плюс":"+", "минус":"-", "умножь":"*", "умножьте":"*", "умножить":"*", "сложи":"+", "сложить":"+", "сложите":"+"}
 actions2 = {"разделить":"/", "раздели":"/", "разделите":"/"}
@@ -80,23 +82,94 @@ def split_on(what, delimiter = None):
             splitted[-1].append(item)
     return splitted
 
+ 
+
+def transform_words_to_numbers(classesList, number, allNumbers):
+	classMultipl=1
+	result=0
+	allNumbersList = {}
+	for item in classesList:
+		allNumbersList.update(item)
+	
+	noClassInNumber = True
+	#проверим, есть ли названия разрядов в числительном
+	for index, value in allNumbersList.items() :
+		if index in number :
+			noClassInNumber = False
+	# определим, какие именно указатели разрядов есть в числительном
+	if noClassInNumber == False :
+		for numlist in classesList :
+			for numName in numlist :
+				if numName in number :
+					numsplit = split_on(number, numName)
+					# если number не содержит названия разряда - преврати число в цифры и 
+					# умножь на разрядность последнего сплита
+					classInNumber = False
+					for i, v in allNumbersList.items():
+						if i in numsplit[0]:
+							classInNumber = True
+							# в числительном есть название разряда, нужен еще один круг
+
+					if classInNumber == True :
+						print ("в числительном осталось название разряда!")
+						number = numsplit[0]
+						print (number, "отправляем на второй круг")
+						if numsplit[1] :
+							print (numsplit[1], "Переводим в цифры, если сущестует")
+							print ("разряд", numName, "/1000")
+							for num in numsplit[1] :
+								result = result + int(allNumbers[num])*(int(numlist[numName])/1000)
+							
+					else:
+						print ("в числительном не осталось названия разряда!")
+						if numsplit[1] :
+							print (numsplit[1], "Переводим в цифры, если сущестует")
+							print ("разряд", numName, "/1000")
+							for num in numsplit[1] :
+								result = result + int(allNumbers[num])*(int(numlist[numName])/1000)
+						print (numsplit[0], "Переводим в цифры")
+						print ("разряд", numName)
+						for num in numsplit[1] :
+							result = result + int(allNumbers[num])*int(numlist[numName])
+
+	else :
+		for num in number :
+			result = result + int(allNumbers[num])*classMultipl
+	return result
+
 """
-def transform_words_to_numbers(classesList, number):
 		currentClass = classesList.pop()
-		for item in classesList:
+		print (currentClass)
+		noClassInNumber = True
+		for item in currentClass:
 			if item in numberList:
-				numsplit = split_on(num1, item)
-				num1thousands = numsplit[0]
-				num1units = numsplit[1]
-				for num in num1units:
-					result = result + allNumbers[num]*1
-"""
+				noClassInNumber = False
+				numsplit = split_on(numberList, item)
+				numBigger = numsplit[0]
+				print (numBigger)
+				numSmaller = numsplit[1]
+				print (numSmaller)
+				for num in numSmaller:
+					result = result + int(allNumbers[num])*startClass
+
+		if noClassInNumber == True :
+			for numb in numberList : 
+				result = result + int(allNumbers[numb])*startClass
+
+		try:
+			numBigger
+			transform_words_to_numbers(classesList, numBigger, startClass*1000, result)
+		except NameError:
+			return result
+"""			
+
+
 inp = input()
 number = inp.split()
-print(number)
-"""
-print(transform_words_to_numbers(allNumbersLists, number))
-"""
+
+
+print(transform_words_to_numbers(allNumbersLists, number, allNumbers))
+
 
 def factorial(n):
 	if n == 0:
