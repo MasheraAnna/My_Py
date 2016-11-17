@@ -23,7 +23,8 @@ def run_bot():
 	dp = updater.dispatcher
 	dp.add_handler(CommandHandler('start', start))
 	dp.add_handler(MessageHandler(['Help!'], help))
-#	dp.add_handler(MessageHandler([Filters.text], talk_to_me))
+	dp.add_handler(MessageHandler([Filters.text], talk_to_me))
+
 	updater.start_polling()
 	updater.idle()
 
