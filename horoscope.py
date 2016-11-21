@@ -9,3 +9,6 @@ currentState = ephem.constellation(mars)
 print("Mars is in", currentState)
 
 print ('Next full moon on', ephem.next_full_moon(date))
+
+moon = str(ephem.next_full_moon(date))
+print(moon)
