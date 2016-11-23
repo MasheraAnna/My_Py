@@ -192,7 +192,7 @@ class WordCalc:
 		inpList = inp.split(" ")
 		# удалим все слова, кроме числительных и действий
 		self.cleanInputList = self.clean_input (inpList, self.allLists)
-		answer = 'Проверим, правильно ли написаны слова. Я покажу тебе текст, если это то, что ты хочешь посчитать, ответь "да". Ты хочешь вычислить: ' + " ".join(self.cleanInputList)
+		answer = 'Проверим, правильно ли написаны слова. Я покажу тебе текст, если это то, что ты хочешь посчитать, ответь "да".\nТы хочешь вычислить:  ' + " ".join(self.cleanInputList)
 		return answer
 
 	def check (self, inp):

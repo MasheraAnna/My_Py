@@ -42,8 +42,8 @@ def get_message(bot, update):
 
 def count_words(bot, update):
 	wordsCounter = WordsCounter.WordsCounter()
-	state = wordsCounter.check_input(update.message.text)
-	if state == True:
+	check = wordsCounter.check_input(update.message.text)
+	if check == True:
 		result = wordsCounter.count()
 		text = result + ". \n Напиши новую фразу (не забудь кавычки) или выбери /menue, чтобы вызвать меню"
 		update.message.reply_text(text)
@@ -63,18 +63,19 @@ def user_check(bot, update):
 	user_check = wCalc.user_check(update.message.text)
 	update.message.reply_text(user_check)
 
+
+
 def check(bot, update):
 	global wMessage
+	global check
 	wCalc = WCalculator.WordCalc()
 	if update.message.text == "да":
-		check = wCalc.check(wMessage)
-		global check
+		message = wCalc.check(wMessage)
 		check = True
 	else:
-		check = "Тогда введи текст заново"
-		global check
+		message = "Тогда введи текст заново"
 		check = False
-	update.message.reply_text(check)
+	update.message.reply_text(message)
 
 
 # калькулятор
@@ -112,7 +113,9 @@ def full_moon(bot, update):
 def talk_to_me(bot, update):
 	update.message.reply_text('Давай поболтаем')
 
-
+def check (bot, update):
+	global state
+	update.message.reply_text(state)	
 
 def main():
 	# Create the EventHandler and pass it your bot's token.
@@ -128,9 +131,14 @@ def main():
 	dp.add_handler(RegexHandler('^(Предсказать полнолуние)$', full_moon))
 	dp.add_handler(RegexHandler('^(Поболтать)$', talk_to_me))
 
-	# dp.add_handler(MessageHandler(Filters.text, count))
+	
 	# dp.add_handler(MessageHandler(Filters.text, count_words))
-	dp.add_handler(MessageHandler(Filters.text, user_check))
+	# dp.add_handler(MessageHandler(Filters.text, user_check))
+	global state
+	if state == 'calc':
+		dp.add_handler(MessageHandler(Filters.text, count))
+	else:
+		dp.add_handler(MessageHandler(Filters.text, check))
 
 	# Start the Bot
 	updater.start_polling()
